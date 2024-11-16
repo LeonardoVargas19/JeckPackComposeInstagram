@@ -80,6 +80,7 @@ fun SocialLogin() {
         Text(
             text = "Continue as Rei Ayanami", fontSize = 14.sp, fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(horizontal = 8.dp), color = Color(0xFF4EA8E9)
+
         )
     }
 }
