@@ -1,4 +1,4 @@
-package com.example.jeckpackcomposeinstagram
+package com.example.jeckpackcomposeinstagram.logi
 
 
 import android.app.Activity
@@ -47,6 +47,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.jeckpackcomposeinstagram.R
 
 
 @Composable
