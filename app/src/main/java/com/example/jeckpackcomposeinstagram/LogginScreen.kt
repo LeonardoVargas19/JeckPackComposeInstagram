@@ -2,6 +2,7 @@ package com.example.jeckpackcomposeinstagram
 
 
 import android.app.Activity
+import android.util.Patterns
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,6 +22,7 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Close
 
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 
@@ -102,7 +104,11 @@ fun Body(modifier: Modifier) {
     Column(modifier = modifier) {
         ImagesHeader(Modifier.align(Alignment.CenterHorizontally))
         Spacer(modifier = Modifier.size(16.dp))
-        Email(email.value) { email.value = it }
+        Email(email.value) {
+            email.value = it
+         isLoginEnable.value = enableLogin(email.value, password.value)
+        }
+
         Spacer(modifier = Modifier.size(4.dp))
         Password(password.value) { password.value = it }
         Spacer(modifier = Modifier.size(8.dp))
@@ -169,11 +175,22 @@ fun LoginButton(isLoginEnable: Boolean) {
     Button(
         onClick = {},
         enabled = isLoginEnable,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color(0xFFF4E4E8),
+            disabledContainerColor = Color(0xFF78C8F9),
+            contentColor = Color.White,
+            disabledContentColor = Color.White
+        )
     ) {
         Text(text = "Login")
     }
 }
+
+
+fun enableLogin(email: String, password: String) =
+    Patterns.EMAIL_ADDRESS.matcher(email).matches() && password.length > 6
+
 
 @Composable
 fun ForgotPassword(modifier: Modifier) {
