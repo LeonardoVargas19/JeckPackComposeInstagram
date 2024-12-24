@@ -1,8 +1,7 @@
-package com.example.jeckpackcomposeinstagram.logi
+package com.example.jeckpackcomposeinstagram.logi.ui
 
 
 import android.app.Activity
-import android.util.Patterns
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,6 +19,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.runtime.livedata.observeAsState
 
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -30,11 +30,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -51,14 +49,14 @@ import com.example.jeckpackcomposeinstagram.R
 
 
 @Composable
-fun LogginScreen() {
+fun LogginScreen(loginViewModel: LoginViewModel) {
     Box(
         Modifier
             .fillMaxSize()
             .padding(18.dp)
     ) {
         Header(Modifier.align(Alignment.TopEnd))
-        Body(Modifier.align(Alignment.Center))
+        Body(Modifier.align(Alignment.Center), LoginViewModel())
         Footer(
             Modifier.align(Alignment.BottomCenter)
         )
@@ -98,20 +96,23 @@ fun SignUp() {
 }
 
 @Composable
-fun Body(modifier: Modifier) {
-    val email = rememberSaveable { mutableStateOf("") }
-    val password = rememberSaveable { mutableStateOf("") }
-    val isLoginEnable = rememberSaveable { mutableStateOf(false) }
+fun Body(modifier: Modifier, loginViewModel: LoginViewModel) {
+    var email = loginViewModel.email.observeAsState(initial = "")
+    var password = loginViewModel.password.observeAsState(initial = "")
+    var isLoginEnable = loginViewModel.isLoginEnable.observeAsState(initial = false)
+//    val email = rememberSaveable { mutableStateOf("") }
+//    val password = rememberSaveable { mutableStateOf("") }
+//    val isLoginEnable = rememberSaveable { mutableStateOf(false) }
     Column(modifier = modifier) {
         ImagesHeader(Modifier.align(Alignment.CenterHorizontally))
         Spacer(modifier = Modifier.size(16.dp))
         Email(email.value) {
-            email.value = it
-         isLoginEnable.value = enableLogin(email.value, password.value)
+            loginViewModel.onLoginChange(email = it, password.value)
         }
-
         Spacer(modifier = Modifier.size(4.dp))
-        Password(password.value) { password.value = it }
+        Password(password.value) {
+            loginViewModel.onLoginChange(email.value, password = it)
+        }
         Spacer(modifier = Modifier.size(8.dp))
         ForgotPassword(Modifier.align(Alignment.End))
         Spacer(modifier = Modifier.size(8.dp))
@@ -120,6 +121,7 @@ fun Body(modifier: Modifier) {
         LoginDivider()
         Spacer(modifier = Modifier.size(32.dp))
         SocialLogin()
+
 
     }
 }
@@ -189,10 +191,6 @@ fun LoginButton(isLoginEnable: Boolean) {
 }
 
 
-fun enableLogin(email: String, password: String) =
-    Patterns.EMAIL_ADDRESS.matcher(email).matches() && password.length > 6
-
-
 @Composable
 fun ForgotPassword(modifier: Modifier) {
     Text(
@@ -209,39 +207,36 @@ fun ForgotPassword(modifier: Modifier) {
 fun Password(password: String, onTextChanged: (String) -> Unit) {
     val passwordVisibility = remember { mutableStateOf(false) }
 
-
-
     TextField(
         value = password,
-        onValueChange = { onTextChanged },
+        onValueChange = { newText ->
+            onTextChanged(newText) // Llamamos a la función con el nuevo valor
+        },
         modifier = Modifier.fillMaxWidth(),
         placeholder = { Text(text = "Password") },
         maxLines = 1,
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         trailingIcon = {
-            val imagen = if (passwordVisibility.value) {
+            val icon = if (passwordVisibility.value) {
                 Icons.Filled.AccountCircle
             } else {
                 Icons.Filled.AccountCircle
             }
             IconButton(onClick = { passwordVisibility.value = !passwordVisibility.value }) {
-                Icon(imageVector = imagen, contentDescription = "show password")
+                Icon(
+                    imageVector = icon,
+                    contentDescription = if (passwordVisibility.value) "Hide password" else "Show password"
+                )
             }
-
         },
         visualTransformation = if (passwordVisibility.value) {
-            VisualTransformation.None
+            VisualTransformation.None // Texto visible
         } else {
-            PasswordVisualTransformation()
+            PasswordVisualTransformation() // Texto oculto con puntos
         },
-        colors = TextFieldDefaults.textFieldColors(
-            unfocusedIndicatorColor = Color.Transparent,
-            focusedIndicatorColor = Color.Transparent,
-            containerColor = Color(0xFFFAFAFA),
-            cursorColor = Color(0xFFB2B2B2)
+
         )
-    )
 }
 
 
@@ -256,13 +251,8 @@ fun Email(email: String, onTextChanged: (String) -> Unit) {
         maxLines = 1,
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-        colors = TextFieldDefaults.textFieldColors(
-            unfocusedIndicatorColor = Color.Transparent,
-            focusedIndicatorColor = Color.Transparent,
-            containerColor = Color(0xFFFAFAFA),
-            cursorColor = Color(0xFFB2B2B2)
+
         )
-    )
 }
 
 

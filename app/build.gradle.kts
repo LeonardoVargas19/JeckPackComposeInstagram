@@ -11,7 +11,7 @@ android {
     defaultConfig {
         applicationId = "com.example.jeckpackcomposeinstagram"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -51,13 +51,18 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-
+    implementation("androidx.compose.runtime:runtime-livedata:1.7.6")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0") // Retrofit principal
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0") // Gson Converter
+    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
+    implementation("com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2")
+    implementation("androidx.compose.foundation:foundation")
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }
+
