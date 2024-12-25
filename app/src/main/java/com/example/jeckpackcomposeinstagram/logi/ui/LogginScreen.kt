@@ -23,6 +23,7 @@ import androidx.compose.runtime.livedata.observeAsState
 
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 
@@ -31,6 +32,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -55,11 +57,23 @@ fun LogginScreen(loginViewModel: LoginViewModel) {
             .fillMaxSize()
             .padding(18.dp)
     ) {
-        Header(Modifier.align(Alignment.TopEnd))
-        Body(Modifier.align(Alignment.Center), LoginViewModel())
-        Footer(
-            Modifier.align(Alignment.BottomCenter)
-        )
+        val isLoading: State<Boolean> = loginViewModel.isLoading.observeAsState(initial = false)
+        if (isLoading.value) {
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .align(Alignment.Center)
+                   
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            Header(Modifier.align(Alignment.TopEnd))
+            Body(Modifier.align(Alignment.Center), loginViewModel)
+            Footer(
+                Modifier.align(Alignment.BottomCenter)
+            )
+        }
     }
 }
 
@@ -116,7 +130,7 @@ fun Body(modifier: Modifier, loginViewModel: LoginViewModel) {
         Spacer(modifier = Modifier.size(8.dp))
         ForgotPassword(Modifier.align(Alignment.End))
         Spacer(modifier = Modifier.size(8.dp))
-        LoginButton(isLoginEnable.value)
+        LoginButton(isLoginEnable.value, loginViewModel)
         Spacer(modifier = Modifier.size(16.dp))
         LoginDivider()
         Spacer(modifier = Modifier.size(32.dp))
@@ -174,9 +188,11 @@ fun LoginDivider() {
 }
 
 @Composable
-fun LoginButton(isLoginEnable: Boolean) {
+fun LoginButton(isLoginEnable: Boolean, loginViewModel: LoginViewModel) {
     Button(
-        onClick = {},
+        onClick = {
+            loginViewModel.onLoginSelected()
+        },
         enabled = isLoginEnable,
         modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(
